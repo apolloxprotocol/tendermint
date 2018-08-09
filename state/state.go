@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"sort"
 	"time"
 
 	"github.com/tendermint/tendermint/types"
@@ -129,6 +130,11 @@ func (state State) MakeBlock(
 	block.ProposerAddress = proposerAddress
 
 	return block, block.MakePartSet(state.ConsensusParams.BlockGossip.BlockPartSizeBytes)
+}
+
+func (state State) median(commit *types.Commit) time.Time {
+	sort.Sort()
+	return time.Now()
 }
 
 //------------------------------------------------------------------------
