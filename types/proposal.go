@@ -34,7 +34,7 @@ func NewProposal(height int64, round int, blockPartsHeader PartSetHeader, polRou
 	return &Proposal{
 		Height:           height,
 		Round:            round,
-		Timestamp:        Now().UTC(),
+		Timestamp:        Now(),
 		BlockPartsHeader: blockPartsHeader,
 		POLRound:         polRound,
 		POLBlockID:       polBlockID,

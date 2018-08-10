@@ -382,7 +382,7 @@ func TestValidatorSetVerifyCommit(t *testing.T) {
 		ValidatorIndex:   0,
 		Height:           height,
 		Round:            0,
-		Timestamp:        Now().UTC(),
+		Timestamp:        Now(),
 		Type:             VoteTypePrecommit,
 		BlockID:          blockID,
 	}

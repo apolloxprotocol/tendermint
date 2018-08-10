@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
-	"sort"
 	"time"
 
 	"github.com/tendermint/tendermint/types"
@@ -116,6 +115,13 @@ func (state State) MakeBlock(
 	// Fill rest of header with state data.
 	block.ChainID = state.ChainID
 
+	// Set time
+	if height == 1 {
+		block.Time = types.Now()
+	} else {
+		block.Time = MedianTime(commit, state.Validators)
+	}
+
 	block.LastBlockID = state.LastBlockID
 	block.TotalTxs = state.LastBlockTotalTx + block.NumTxs
 
@@ -132,9 +138,18 @@ func (state State) MakeBlock(
 	return block, block.MakePartSet(state.ConsensusParams.BlockGossip.BlockPartSizeBytes)
 }
 
-func (state State) median(commit *types.Commit) time.Time {
-	sort.Sort()
-	return time.Now()
+func MedianTime(commit *types.Commit, validators *types.ValidatorSet) time.Time {
+
+	timeToVotingPower := make(map[time.Time]int64, len(commit.Precommits))
+
+	for _, vote := range commit.Precommits {
+		if vote != nil && vote.BlockID.Equals(commit.BlockID) {
+			_, validator := validators.GetByIndex(vote.ValidatorIndex)
+			timeToVotingPower[vote.Timestamp] = validator.VotingPower
+		}
+	}
+
+	return types.WeightedMedian(timeToVotingPower)
 }
 
 //------------------------------------------------------------------------

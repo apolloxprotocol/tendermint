@@ -9,7 +9,6 @@ func Now() time.Time {
 	return time.Now().Round(0).UTC()
 }
 
-// Input map is of the following format: key is time.Time converted with .UnixNano(), and value is voting power
 func WeightedMedian(timeToVotingPower map[time.Time]int64) (res time.Time) {
 	totalVotingPower := int64(0)
 	for _, v := range timeToVotingPower {

@@ -1644,12 +1644,18 @@ func (cs *ConsensusState) addVote(vote *types.Vote, peerID p2p.ID) (added bool, 
 func (cs *ConsensusState) signVote(type_ byte, hash []byte, header types.PartSetHeader) (*types.Vote, error) {
 	addr := cs.privValidator.GetAddress()
 	valIndex, _ := cs.Validators.GetByAddress(addr)
+
+	timestamp := types.Now()
+	if cs.ProposalBlock != nil && cs.Proposal.Timestamp.Add(1*time.Second).After(timestamp) {
+		timestamp = cs.Proposal.Timestamp.Add(1 * time.Second)
+	}
+
 	vote := &types.Vote{
 		ValidatorAddress: addr,
 		ValidatorIndex:   valIndex,
 		Height:           cs.Height,
 		Round:            cs.Round,
-		Timestamp:        types.Now(),
+		Timestamp:        timestamp,
 		Type:             type_,
 		BlockID:          types.BlockID{hash, header},
 	}
